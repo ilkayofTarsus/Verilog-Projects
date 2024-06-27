@@ -1,0 +1,63 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 08.09.2023 08:53:31
+// Design Name: 
+// Module Name: uart_top
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module uart_top(
+                input clk,
+                input rst,
+                input data_i,
+                input [7:0] data_i_fifo,
+                input wr_en,
+                input rd_en,
+                output[6:0] data_o,
+                output gpio_out,
+                output full,
+                output empty
+    );
+    wire busy,full,empty;
+    wire[7:0] din;
+    /*UART_Rx U_rx(
+                .Din(data_i),
+                .clk(clk),
+                .rst(rst),
+                .Dout(data_i_fifo)
+    );*/
+    FIFO fifo(
+           .clk(clk),
+           .rst(rst),
+           .data_i(data_i_fifo),
+           .rd_en_i(rd_en),
+           .wr_en_i(wr_en),
+           .full(full),
+           .empty(empty),
+           .data_o(data_o),
+           .full_empty(din)
+    );
+    UART_Tx U_tx(
+              .Sent(1'b1),
+              .ParitySelect(1'b1),
+              .Din(din),
+              .rst(rst),
+              .clk(clk),
+              .Busy(busy),
+              .Dout(gpio_out)
+    );
+endmodule
